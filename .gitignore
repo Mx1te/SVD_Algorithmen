@@ -3,3 +3,4 @@
 /build
 *.spec
 *.txt
+/svd_results
