@@ -168,6 +168,15 @@ def process_file(
 
         results.append((k, err, energy, orig, svd, savings))
 
+        # Terminalausgabe der relevanten Kennzahlen für Rang-k
+        print(
+            (
+                f"k={k}: Fehler(Frobenius)={err:.4f}; Energie={energy*100:.2f}%" \
+                f"; Original Werte={orig}; SVD Werte={svd}; Ersparnis={(savings*100):.2f}%" \
+                f"; PNG='{png_name}'"
+            )
+        )
+
         # Optionale Anzeige
         if show_plots:
             # kleine Anzeige für interaktives Arbeiten
