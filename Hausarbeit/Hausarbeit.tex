@@ -1,0 +1,417 @@
+\documentclass[12pt,a4paper]{scrreprt}
+
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[onehalfspacing]{setspace}
+\usepackage{placeins}
+\KOMAoptions{parskip=half}
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+
+
+% ---------- Seitenstil / Kopf-/Fußzeilen ----------
+\usepackage[automark]{scrlayer-scrpage}
+\usepackage{pageslts}
+\usepackage{refcount}
+\usepackage{tocbasic}
+\usepackage{enumitem}
+\usepackage{booktabs}
+
+% Verzeichnis-Überschriften ohne Extra-Abstände und mit gleichem Pagestyle
+\AfterTOCHead[lof]{%
+  \thispagestyle{scrheadings}%
+  \markboth{\listfigurename}{\listfigurename}%
+}
+\AfterTOCHead[lot]{%
+  \thispagestyle{scrheadings}%
+  \markboth{\listtablename}{\listtablename}%
+}
+\AfterTOCHead[lol]{%
+  \thispagestyle{scrheadings}%
+  \markboth{\lstlistlistingname}{\lstlistlistingname}%
+}
+
+\clearpairofpagestyles
+\ihead{}\chead{}\ohead{}
+\cfoot*{\pagemark}
+\setkomafont{pageheadfoot}{\normalfont}
+\KOMAoptions{headsepline=false,plainheadsepline=false}
+\pagestyle{scrheadings}
+\renewcommand*{\chapterpagestyle}{scrheadings}
+
+% LoF/LoT in das Inhaltsverzeichnis (kein \addcontentsline nötig)
+\KOMAoptions{listof=totoc}
+
+% ---------- Sprache/Fonts ----------
+\usepackage[ngerman]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% ---------- Mathe & Einheiten ----------
+\usepackage{amsmath,amssymb}
+\usepackage{siunitx}
+\sisetup{detect-all}
+
+% ---------- Grafiken & Tabellen ----------
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage[labelfont=bf,labelsep=colon,justification=raggedright,singlelinecheck=false]{caption}
+\KOMAoptions{captions=tableheading}
+\usepackage{array}
+
+% --- Listings (X++) ---------------------------------------------------------
+\usepackage{listings}
+\usepackage{float}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{chngcntr}
+\counterwithout{table}{chapter}
+
+\definecolor{kommentargruen}{HTML}{008000}
+\definecolor{publicstaticblau}{HTML}{1e90ff}
+\definecolor{namenteal}{HTML}{008b8b}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\usepackage{ragged2e}
+
+\renewcommand{\lstlistingname}{Listing}
+\renewcommand{\lstlistlistingname}{Listingsverzeichnis}
+
+% X++-Sprache definieren
+\lstdefinelanguage{XPP}{
+  morekeywords=[1]{},
+  morekeywords=[2]{while, select},
+  morekeywords=[3]{myTable},
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+  alsoletter={_}
+}
+
+% Stil für X++
+\lstdefinestyle{xppstyle}{
+  language=XPP,
+  basicstyle=\ttfamily\small,
+  numbers=left,
+  numberstyle=\tiny,
+  numbersep=6pt,
+  frame=single,
+  showstringspaces=false,
+  columns=fullflexible,
+  keepspaces=true,
+  tabsize=4,
+  breaklines=true,
+  breakatwhitespace=true,
+  keywordstyle=[1]\color{kommentargruen}\bfseries,
+  keywordstyle=[2]\color{publicstaticblau}\bfseries,
+  keywordstyle=[3]\color{namenteal}\bfseries,
+  commentstyle=\color{Gray}\itshape,
+  stringstyle=\color{namenteal}
+}
+
+\lstdefinelanguage{XML}{
+  morestring=[b]",
+  morecomment=[s]{<!--}{-->},
+  moredelim=[s][\color{blue}]{<}{>},
+  stringstyle=\color{orange},
+  identifierstyle=\color{black},
+}
+
+\lstdefinestyle{xmlstyle}{
+  basicstyle=\ttfamily\small,
+  numbers=left,
+  numberstyle=\tiny,
+  numbersep=8pt,
+  breaklines=true,
+  frame=single,
+  captionpos=b
+}
+
+% Listings global
+\lstset{
+  float=false,          % nicht floaten -> bleibt im Fließtext
+  captionpos=b,
+  style=xppstyle,
+  frame=none
+}
+
+% Nur Verzeichniseintrag ohne Code im Text:
+\newcommand{\xpponlylist}[2]{% #1 Caption, #2 Label
+  \refstepcounter{lstlisting}%
+  \addcontentsline{lol}{lstlisting}{\protect\numberline{\thelstlisting}#1}%
+  \label{#2}%
+}
+
+
+% ---------------------------------------------------------------------------
+
+\usepackage{csquotes}
+
+% ---- biblatex ----
+\usepackage[
+  backend=biber,
+  style=iso-numeric,
+  sorting=none,
+  autocite=inline
+]{biblatex}
+
+% Treiber-Aliasse, damit keine Warnungen für exotische Typen kommen
+\DeclareBibliographyAlias{legislation}{misc}
+\DeclareBibliographyAlias{standard}{book}
+
+
+
+\addbibresource{literatur.bib}
+
+\usepackage[
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=blue,
+  citecolor=black,
+  anchorcolor=black,
+  breaklinks=true
+]{hyperref}
+
+% ---- Warnung von tracklang gezielt filtern (statt fehlerhafter Option) ----
+\usepackage{silence}
+\WarningFilter{tracklang}{No `datatool' support for dialect}
+
+% ---- glossaries ----
+%\usepackage[xindy,acronym]{glossaries}
+%\IfFileExists{glossar.tex}{\loadglsentries{glossar.tex}}{\typeout{*** glossar.tex NICHT gefunden ***}}
+%\makeglossaries
+%\GlsSetXdyLanguage{german}
+%\setacronymstyle{long-short}
+
+% --- tocloft ENTFERNT ---
+
+% ---- Metadaten ----
+\newcommand{\Titel}{Hausarbeit zur Singulärwertzerlegung}
+\newcommand{\Art}{Hausarbeit}
+\newcommand{\Autor}{Malte Luca Peukert}
+\newcommand{\Anschrift}{Beethovenstraße 27, 06749 Bitterfeld-Wolfen}
+\newcommand{\Seminargruppe}{CS24-1}
+\newcommand{\Matrikelnummer}{5002722}
+\newcommand{\Betreuer}{}
+\newcommand{\FirmaDesBetreuer}{Kunert Business Software GmbH}
+\newcommand{\AdresseFirma}{Altenburger Str. 13, 04275 Leipzig}
+\newcommand{\OrtDatum}{Leipzig, 28. Dezember 2025}
+\newcommand{\blockcite}[2]{%
+  \begin{displayquote}
+    \enquote{#1}%
+    \par\small\raggedleft
+    \citeauthor{#2} (\citeyear{#2}): \citetitle{#2}.%
+  \end{displayquote}
+}
+
+% Kapitel-/Abschnittsabstände vereinheitlicht
+
+
+\RedeclareSectionCommand[
+  style=section, 
+  indent=0pt, 
+  beforeskip=0pt,
+  afterskip=.8\baselineskip,
+  afterindent=false
+]{chapter} 
+
+\RedeclareSectionCommand[
+  beforeskip=.8\baselineskip,
+  afterskip=.5\baselineskip,
+  afterindent=false
+]{section}
+\RedeclareSectionCommand[afterindent=false]{subsubsection}
+
+\begin{document}
+\pagenumbering{gobble}
+
+\begin{titlepage}
+  \centering
+  \Large
+  Duale Hochschule Sachsen\\[0.5em]
+  Staatliche Studienakademie Leipzig\\[4em]
+  \huge\bfseries \Titel\\[1cm]
+  \small
+  im Rahmen des Studiengangs Bachelor of Science\\
+  in der Studienrichtung Informatik\\
+  im Modul Algorithmen und Datenstrukturen (5CS-TI2AD-30)
+
+  \vspace{3cm}
+
+  \begin{center}
+    \normalsize
+    \begin{tabularx}{\linewidth}{l X}
+      Eingereicht von: & \Autor \\
+                        & \Anschrift \\
+                        & Seminargruppe: \Seminargruppe \\
+                        & Matrikelnummer: \Matrikelnummer \\[1cm]
+    \end{tabularx}
+    \vspace{1cm}
+  \end{center}
+
+  \vfill
+  \begin{center}
+    \OrtDatum
+  \end{center}
+\end{titlepage}
+
+\begingroup
+  \KOMAoptions{headsepline=false,plainheadsepline=false}
+  \pagestyle{empty}
+  \tableofcontents
+\endgroup
+
+\cleardoublepage
+
+
+
+% HIER HAUPTTEIL
+
+
+
+
+\newpage
+\pagenumbering{Roman}
+\setcounter{page}{1}
+\chapter{Einleitung}
+In unserer digitalisierten Welt sind Bilder allgegenwärtig. Durch die Weiterentwicklung von Mobiltelefonen, hat so gut wie jeder eine hochauflösende Kamera in der Hosentasche. Mit dieser steigenden Auflösung, wächst der Bedarf an effizienter Speicherung und Übertragung. Dafür ist es notwendig wirksam und zuverlässig Bilddaten zu komprimieren. Klassische Verfahren wie zum Beispiel JPEG oder PNG nutzen mathematische Transformation, um redundate Informationen zu entfernen und damit den Speicherbedarf signifikant zu reduzieren. Eine besonderst effektives und effizientes mathematisches Verfahren ist dafür die Singulärwertzerlegung (Singular Value Decomposition, SVD). Sie sie hat große Bedeutung für die Bildverarbeitung, aber auch weitreichende Anwendungen in der Signalverarbeitung, Datenanalyse, Statistik und maschinellem Lernen\cite{golub_svd}.
+
+Die SVD ist ein zentrales Konzept der linearen Algebra\cite{strang_ocw}. Besonders relevant für Bildkompression ist ihre Eigenschaft, Matrizen optimal durch niedrigere Ränge approximieren zu können. Diese Tatsache, die im sogenannten Eckart-Young-Theorem formalisiert ist und bis heute als Grundlage zahlreicher Kompressionsverfahren dient.
+
+Diese Hausarbeit untersucht die Anwendung der SVD zur Speicherung eines vereinfachten Bildes und zeigt wie, mithilfe der Rang-k-Approximation Speicherplatz reduziert werden kann, ohne die wesentlichen Bildinformationen zu verlieren
+\chapter{Problemstellung}
+Hochauflösende digitale Bilder bestehen aus einer großen Anzahl von Pixeln, die üblicherweise als eine zweidimensionalen Matrix gespeichert werden. Dementsprechend wächst der Speicherbedarf eines unkomprimierten Bildes proportional zur Anzahl der Pixel. Bei einer Größe von 15x25 enthält die Matrix bereits 375 einzelne Werte, während ein Bild im HD-Format bereits über zwei Millionen Pixel umfasst. 
+
+Die zugrunde liegende Aufgabe dieser Arbeit besteht darin,
+\begin{enumerate}
+    \item die Matrixdarstellung des Buchstabens „F“ aus einer Textdatei einzulesen,
+    \item die vollständige SVD dieser Matrix berechnen,
+    \item sukzessive Rang-k-Approximation zu erzeugen und analysieren,
+    \item die Veränderung der Bildqualität bei zunehmendem k zu untersuchen,
+    \item die erzielten Speicherersparnisse gegenüber der Originalmatrix zu bestimmen.
+\end{enumerate}
+
+Das zu Grunde liegende Ziel ist es zu verstehen, wie stark ein Bild komprimiert werden kann, ohne an Erkennbarkeit oder Informationswert zu verlieren.
+
+\chapter{Mathematische Grundlagen der Singulärwertzerlegung}
+\section{Grundlagen der Matrixdarstellung von Bildern}
+Ein Graustufenbild lässt sich mathematisch als Matrix
+\begin{equation}
+    A \in \mathbb{R}^{m \times n}
+\end{equation}
+darstellen. Jeder Eintrag $a_{ij}$ entspricht dabei den Helligkeitswert eines Pixels dar. Binäre Bilder, wie das in dieser Hausarbeit benutzte „F", enthalten nur die Werte 0 und 1. Sie eignen sich trotzdem hervorragend zu Untersuchung von Strukturzerlegung, da sie klare Kanten und Zusammenhänge besitzen.
+
+\section{Definition der Singulärwertzerlegung}
+Die SVD zerlegt eine Matrix $A$ in drei Komponenten:
+\begin{equation}
+    A = U \Sigma V^{T}
+\end{equation}
+Dabei gelten folgende Eigenschaften:
+\begin{itemize}
+    \item $U \in \mathbb{R}^{m \times m}$ enthält die orthogonalen Basisvektoren der Zeilenstruktur.
+    \item $\Sigma \in \mathbb{R}^{m \times n}$ enthält die Singulärwerte $\sigma_1 \ge \sigma_2 \ge \dots$
+    \item $V \in \mathbb{R}^{n \times n}$ enthält die orthogonalen Basisvektoren der Spaltenstruktur
+\end{itemize}
+
+Jeder Singulärwert $\sigma_i$ in $\Sigma$ gibt die Bedeutung des zugehörigen Basisvektors an. Größere Werte deuten auf wichtigere Strukturen hin, während kleinere Werte oft Rauschen oder weniger relevante Details repräsentieren.
+
+\section{Rang-k-Approximation}
+Die entscheidende Eigenschaft der SVD für die Bildkompression ist die Möglichkeit, eine Matrix $A$ durch eine Rang-k-Approximation $A_k$ zu nähern:
+\begin{equation}
+    A_k = U_k \Sigma_k V_k^{T}
+\end{equation}
+Hierbei werden nur die ersten $k$ Singulärwerte und die zugehörigen Spalten von $U$ und $V$ verwendet. Diese Approximation minimiert den Frobenius-Norm-Fehler zwischen $A$ und $A_k$, was bedeutet, dass $A_k$ die beste mögliche Annäherung an $A$ mit Rang $k$ ist.
+
+\section{Speicherersparnis durch Rang-k-Approximation}
+Originalmatrix:
+\begin{equation}
+    \text{Speicherbedarf von } O = m \times n
+\end{equation}
+
+Die Speicherersparnis ergibt sich aus der Reduktion der benötigten Elemente zur Speicherung der Matrix. Anstatt die gesamte $m \times n$ Matrix $A$ zu speichern, müssen nur noch die ersten $k$ Spalten von $U$, die ersten $k$ Zeilen und Spalten von $\Sigma$ sowie die ersten $k$ Spalten von $V$ gespeichert werden. Die Gesamtanzahl der zu speichernden Elemente reduziert sich somit auf:
+\begin{equation}
+   S(k) = k(m + n + 1)
+\end{equation}
+Dies führt zu einer erheblichen Reduktion des Speicherbedarfs, insbesondere wenn $k$ deutlich kleiner ist als sowohl $m$ als auch $n$.
+
+Relative Speicherersparnis:
+\begin{equation}
+    \text{Relative Speicherersparnis} E(k) = 1- \frac{S(k)}{O} = 1 - \frac{k(m + n + 1)}{m \times n}
+\end{equation}
+
+\chapter{Programmbeschreibung und Auswertung}
+In diesem Kapitel wird das entwickelte Python-Programm \texttt{svd\_image\_compression.py} detailliert beschrieben. Das Programm dient der praktischen Umsetzung der Singulärwertzerlegung zur Bildkompression und erfüllt alle Anforderungen der Aufgabenstellung. Es ermöglicht das Einlesen einer Bildmatrix, die Berechnung der reduzierten SVD, die Rekonstruktion für verschiedene Rangwerte, die grafische Darstellung der Ergebnisse, die Berechnung von Fehlermaßen, der Energieerhaltung sowie der Speicherersparnis. Zusätzlich wird eine übersichtliche CSV-Datei zur Dokumentation der Ergebnisse erzeugt.
+
+\section{Lösungsansatz und Wahl der Programmiersprache}
+Zur praktischen Umsetzung wird Python in Verbindung mit der Bibliothek NumPy und Matplotlib verwendet. NumPy stellt eine hocheffiziente Implementierung der SVD bereit, die intern auf der LAPACK-Bibliothek basiert und Mathplotlib ermöglicht die anschauliche Visualisierung der Ergebnisse.
+
+Python bietet darüber hinaus:
+\begin{itemize}
+    \item hohe Lesbarkeit und einfache Syntax,
+    \item einfache Datenverarbeitung,
+    \item Plattformunabhängigkeit,
+    \item schnelle Umsetzung von mathematischen Algorithmen.
+\end{itemize}
+
+\section{Programmstruktur und Ablauf}
+Das Programm ist klar modular aufgebaut und besteht aus drei Hauptbereichen:
+\begin{enumerate}
+    \item \textbf{Hilfsfunktionen} (Matrix-Einlesen, SVD, Rekonstruktion, Speicherersparnis, Fehlerberechnung).
+    \item \textbf{Verarbeitungsfunktion} \texttt{process\_file} als zentrale Pipeline
+    \item \textbf{Komandzeileninterface (CLI)} mit \texttt{argparse}
+\end{enumerate}
+
+Der grundsätzliche Ablauf des Programms ist wie folgt:
+\begin{enumerate}
+    \item Einlesen der Bildmatrix aus \texttt{SVD\_F.txt}.
+    \item Berechnung der reduzierten Singulärwertzerlegung.
+    \item Rekonstruktion der Bildmatrix für verschiedene Rangwerte $k$.
+    \item Speicherung der rekonstruierten Matrizen als PNG-Dateien.
+    \item Optionale Speicherung als Textdateien.
+    \item Berechnung und Ausgabe von Fehlermaßen, Energieerhaltung und Speicherersparnis.
+    \item Erzeugung einer CSV-Datei mit den Ergebnissen.
+\end{enumerate}
+\phantomsection
+\printbibliography[heading=bibintoc,title=Literatur]
+\newpage
+
+% --- Abbildungsverzeichnis: KEIN \addcontentsline nötig ---
+%\begingroup
+%  \listoffigures
+%\endgroup
+%\newpage
+
+% Listingsverzeichnis: weiterhin expliziter ToC-Eintrag
+%\phantomsection\addcontentsline{toc}{chapter}{\lstlistlistingname}
+%\begingroup
+%  \lstlistoflistings
+%\endgroup
+%\newpage
+
+%\phantomsection\addcontentsline{toc}{chapter}{\glossaryname}
+%\begingroup
+%  \printglossary[title=\glossaryname]
+%\endgroup
+%\newpage
+
+%\\phantomsection\addcontentsline{toc}{chapter}{Abkürzungsverzeichnis}
+%\\begingroup
+%\  \printglossary[type=\acronymtype,title=Abkürzungsverzeichnis]
+%\\endgroup
+%\\newpage
+
+% --- Tabellenverzeichnis: KEIN \addcontentsline nötig ---
+%\\begingroup
+%\  \listoftables
+%\\endgroup
+%\\newpage
+
+%\\appendix
+
+\phantomsection\addchap{Anhang}
+
+\phantomsection\addsec{Selbstständigkeitserklärung}
+Ich versichere, dass ich die vorliegende Hausarbeit ohne fremde Hilfe selbständig verfasst und nur die angegebenen Quellen und Hilfsmittel benutzt habe. Wörtlich oder dem Sinn nach aus anderen Werken entnommene Stellen sind unter Angabe der Quellen kenntlich gemacht. Bestandteile der Arbeit, die mittels Künstlicher Intelligenz entstanden sind, wurden ausdrücklich gekennzeichnet. Die Arbeit wurde bisher in gleicher oder ähnlicher Form weder veröffentlicht noch einer anderen Prüfungsbehörde vorgelegt.\\[2em]
+Leipzig, 10. Oktober 2025 \hfill\rule{5cm}{0.4pt}
+\noindent\makebox[\linewidth][r]{Malte Luca Peukert}\par
+
+\end{document}
