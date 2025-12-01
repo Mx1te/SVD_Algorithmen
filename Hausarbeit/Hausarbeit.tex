@@ -370,6 +370,74 @@ Der grundsätzliche Ablauf des Programms ist wie folgt:
     \item Berechnung und Ausgabe von Fehlermaßen, Energieerhaltung und Speicherersparnis.
     \item Erzeugung einer CSV-Datei mit den Ergebnissen.
 \end{enumerate}
+\section{Einlesen der Bildmatrix}
+Das Einlesen der Bilddaten erfolgt über die Funktion:
+\begin{verbatim}
+    def load_matrix(path: str):
+\end{verbatim}
+Die Matrix wird aus einer Textdatei eingelesen:
+\begin{verbatim}
+    A = np.loadtxt(path)
+\end{verbatim}
+Die Datei \texttt{SVD\_F.txt} enthält die binäre Matrix des Buchstabens „F“. Jeder Eintrag entspricht einem Pixelwert (0 oder 1). Nach dem Einlesen wird die Matrix in ein NumPy-Array vom Typ \texttt{float} umgewandelt, das für die weitere Verarbeitung verwendet wird.
+
+\section{Berechnung der Singulärwertzerlegung}
+Die Funktion:
+\begin{verbatim}
+    def compute_svd(A: np.ndarray):
+\end{verbatim}
+berechnt die reduzierte SVD der Matrix $A$ mittels NumPy:
+\begin{verbatim}
+    U, S, Vt = np.linalg.svd(A, full_matrices=False)
+\end{verbatim}
+Die Zerlegung erfolgt gemäß der Definition:
+\begin{equation}
+    A = U \Sigma V^{T}
+\end{equation}
+Dabei enthalten:
+\begin{itemize}
+    \item $U$: linke Singulärvektoren,
+    \item $S$: Singulärwerte (als 1D-Array),
+    \item $V^{T}$: transponierte rechte Singulärvektoren.
+\end{itemize}
+Die reduzierte Form (\texttt{full\_matrices=False}) sorgt dafür, dass nur die notwendigen Komponenten berechnet werden, was Speicher spart.
+
+\section{Rekonstruktion der Rang-k-Approximation}
+Die Rang-k-Approximation wird durch die Funktion:
+\begin{verbatim}
+    def reconstruct_rank_k(U: np.ndarray, S: np.ndarray, Vt: np.ndarray, k: int)
+\end{verbatim}
+berechntet. Die mathematische Umsetzung lautet:
+\begin{equation}
+    A_k = U_k \Sigma_k V_k^{T}
+\end{equation}
+Dabei werden nur die ersten $k$ Spalten von $U$, die ersten $k$ Singulärwerte und die ersten $k$ Zeilen von $V^{T}$ verwendet. Die Implementierung erfolgt direkt als Matrixprodukt:
+\begin{verbatim}
+    return U[:, :k] @ np.diag(S[:k]) @ Vt[:k, :]
+\end{verbatim}
+Durch die vektorisierte Form ist die Rekonstruktion sowohl numerisch stabil als auch effizient.
+Fals ein ungültiger Wert für $k$ übergeben wird, wird eine ValueError ausgelöst:
+\begin{verbatim}
+    if k <= 0:
+      raise ValueError("k muss >= 1 sein")
+\end{verbatim}
+
+\section{Speicherung der Rekonstruktionen}
+Die rekonstruierten Matrizen werden als PNG-Bilder gespeichert. Dies erfolgt in der Funktion:
+\begin{verbatim}
+    def save_reconstruction(Ak: np.ndarray, filename: str)
+\end{verbatim}
+als Textdateien gespeichert:
+\begin{verbatim}
+    np.savetxt(filename, Ak, fmt="%.3f")
+\end{verbatim}
+Die Speicherung mit drei Nachkommastellen ermöglicht eine kompakte Dokumentation der Näherungsmatrix, mit Werten wie 0.000, 0.333, 0.667 und 1.000, in einer Textdatei entsprechend des jeweiligen $k$, wie z.B. \texttt{reconstruction\_k\_1.txt}.
+
+Zusätzlich werden alle Rekonstruktionen als Graustufenbilder gespeichert:
+\begin{verbatim}
+    plot_matrix(Ak, title=f'Rang-{k}', savepath=png_name)
+\end{verbatim}
+Damit entsteht eine visuelle Darstellung der Qualität der Approximation für jedes $k$.
 \phantomsection
 \printbibliography[heading=bibintoc,title=Literatur]
 \newpage
