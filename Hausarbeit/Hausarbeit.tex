@@ -438,6 +438,155 @@ Zusätzlich werden alle Rekonstruktionen als Graustufenbilder gespeichert:
     plot_matrix(Ak, title=f'Rang-{k}', savepath=png_name)
 \end{verbatim}
 Damit entsteht eine visuelle Darstellung der Qualität der Approximation für jedes $k$.
+
+\section{Fehlerberechnung (Frobenius-Norm)}
+Die Rekonstruktionsqualität wird durch die Frobenius-Norm des Fehlers mit der Funktion gemessen:
+\begin{verbatim}
+    def reconstruction_error(A: np.ndarray, Ak: np.ndarray)
+\end{verbatim}
+
+Mathematisch wird der Fehler wie folgt definiert:
+\begin{equation}
+    \| A - A_k \|_F 
+\end{equation}
+und wird implementiert mit:
+\begin{verbatim}
+    return float(np.linalg.norm(A - Ak, ord='fro'))
+\end{verbatim}
+Diese Norm misst die quadratische Abweichung aller Matrixeinträge und ist ein gängiges Maß für die Rekonstruktionsqualität.
+
+\section{Energieerhaltung der Singulärwerte}
+Der Anteil der durch die ersten $k$ Singulärwerte erklärten Energie wird durch:
+\begin{verbatim}
+    def energy_retained(S: np.ndarray, k: int)
+\end{verbatim}
+berechnet. Die mathematische Definition lautet:
+\begin{equation}
+    E(k) = \frac{\sum_{i=1}^{k} \sigma_i^2}{\sum_{i=1}^{r} \sigma_i^2}
+\end{equation}
+Diese Kennzahl gibt an, wie viel der Gesamtinformation der Originalmatrix durch die Rang-k-Approximation erhalten bleibt. Die Implementierung erfolgt durch:
+\begin{verbatim}
+     k = min(k, len(S))
+    total = np.sum(S ** 2)
+    if total == 0:
+        return 0.0
+    return np.sum(S[:k] ** 2) / total
+\end{verbatim}
+
+\section{Berechnung der Speicherersparnis}
+Die Speicherersparnis wird durch die Funktion:
+\begin{verbatim}
+    def storage_savings(m: int, n: int, k: int)
+\end{verbatim}
+berechnet.
+
+Originalmatrix:
+\begin{equation}
+    O = m \times n 
+\end{equation}
+Speicherbedarf der Rang-k-Approximation:
+\begin{equation}
+    S(k) = k(m + n + 1)
+\end{equation}
+Relative Speicherersparnis:
+\begin{equation} 
+    E(k) = 1- \frac{S(k)}{O} = 1 - \frac{k(m + n + 1)}{m \times n}
+\end{equation}
+Die Implementierung erfolgt durch:
+\begin{verbatim}
+    original = m * n
+    svd = k * (m + n + 1)
+    savings = 1 - svd / original
+\end{verbatim}
+
+\section{Darstellung als Graustufenbild}
+Letztlich werden die rekonstruierten Matrizen als Graustufenbilder visualisiert. Dies geschieht in der Funktion:
+\begin{verbatim}
+    def plot_matrix(A: np.ndarray, title: str, savepath: str)
+\end{verbatim}
+
+\section{Zentrale Verarbeitung - \texttt{process\_file()}}
+Die Funktion:
+\begin{verbatim}
+    def process_file(
+    input_path: str,
+    output_dir: str,
+    k_values: List[int],
+    save_text_recons: bool = True,
+    show_plots: bool = False
+):
+\end{verbatim}
+dient als zentrale Pipeline für die gesamte Verarbeitung:
+\begin{enumerate}
+    \item Erzeugung des Ausgabeordners.
+    \item Einlesen der Matrix.
+    \item Berechnung der SVD.
+    \item Iterative Rekonstruktion für jedes $k$.
+    \item Speicherung der PNG-Grafiken.
+    \item (Optionale) Speicherung der Textdateien.
+    \item Berechnung und Ausgabe der Fehlermaße, Energieerhaltung und Speicherersparnis.
+    \item Erstellung einer CSV-Datei mit den Ergebnissen.
+    \item (Optionale) Anzeige der Grafiken.
+\end{enumerate}
+Für jeden k-Wert wird ein vollständiger Datensatz erzeugt.
+
+\section{Ergebnissdatei (CSV)}
+Die Datei \texttt{svd\_results.csv} wird im Ausgabeordner gespeichert und enthält eine tabellarische Übersicht aller berechneten Werte für jedes $
+k$. Sie enthält folgende Spalten:
+
+\begin{tabular}{l l}
+\toprule
+\textbf{Spalte} & \textbf{Beschreibung} \\
+\midrule
+k & Rang der Approximation \\
+frobenius\_error & Frobenius-Norm des Rekonstruktionsfehlers \\
+energy\_retained & Anteil der durch die ersten k Singulärwerte erklärten Energie \\
+original\_values & Speicherbedarf der Originalmatrix \\
+svd\_values & Speicherbedarf der Rang-k-Approximation \\
+savings\_relative & Relative Speicherersparnis \\
+\end{tabular}
+
+Die Datei ermöglicht eine objektive Bewertung der Kompressionsleistung für verschiedene Rangwerte.
+
+\section{Komandzeileninterface (CLI)}
+Das Programm wird über ein einfaches CLI gesteuert, das mit der Bibliothek \texttt{argparse} implementiert ist. Es ermöglicht die Angabe folgender Parameter:
+\begin{itemize}
+    \item \texttt{--input}: Pfad zur Eingabedatei (Standard: \texttt{SVD\_F.txt}).
+    \item \texttt{--out}: Verzeichnis für die Ausgabe (Standard: \texttt{svd\_results}).
+    \item \texttt{--ks}: Liste der k-Werte für die Rekonstruktion (Standard: 1,2,3,5,8,10).
+    \item \texttt{--no-text}: Deaktiviert die Speicherung der Textdateien.
+    \item \texttt{--show}: Aktiviert die Anzeige der Grafiken nach der Verarbeitung.
+\end{itemize}
+
+\chapter{Auswertung der Ergebnisse}
+In diesem Kapitel werden die numerischen Ergebnisse der durchgeführten SVD-Experimente systematisch ausgewertet und interpretiert. Grundlage ist die Datei \texttt{svd\_results.csv}, die für verschiedene Rangwerte 
+$k$ die folgenden Kennzahlen enthält: Frobenius-Fehler, Energieerhalt, Original- und SVD-Speicherbedarf sowie die relative Speicherersparnis.
+
+Ziel der Auswertung ist es, (i) die  numerischen Messerwerte mathematisch einzuordnen, (ii) den besten Kompromiss zwischen Speicherersparnis und Rekonstruktionsqualität zu identifizieren und (iii) Empfehlungen für die Interpretation und Anwendung der SVD-Kompression abzuleiten.
+
+\section{Datenbasis}
+\begin{tabular}{c c c c c c c}
+\toprule
+\textbf{k} & \textbf{Frobenius-Fehler} & \textbf{Energieerhalt} & \textbf{Original} & \textbf{SVD} & \textbf{Relative Einsparung} \\
+\midrule
+\
+1 & 4.1923 & 79.08\% & 375 & 41  & 89.07\% \\
+2 & 1.8278 & 96.02\% & 375 & 82  & 78.13\% \\
+3 & 0.0000 & 100.00\% & 375 & 123 & 67.20\% \\
+5 & 0.0000 & 100.00\% & 375 & 205 & 45.33\% \\
+8 & 0.0000 & 100.00\% & 375 & 328 & 12.53\% \\
+10 & 0.0000 & 100.00\% & 375 & 410 & -9.33\% \\
+\bottomrule
+\end{tabular}
+
+\section{Analyse des Energieerhalts}
+Die gemessenen Werte:
+\begin{itemize}
+    \item k = 1: \begin{equation} E(1) \approx 79.08\% \end{equation}
+    \item k = 2: \begin{equation} E(2) \approx 96.02\% \end{equation}
+    \item k = 3: \begin{equation} E(3) = 100.00\% \end{equation}
+\end{itemize}
+zeigen, dass bereits mit k = 2 ein Großteil der Bildinformation erhalten bleibt. Ab k = 3 ist die Rekonstruktion perfekt, was auf die geringe Komplexität des binären Bildes zurückzuführen ist. 
 \phantomsection
 \printbibliography[heading=bibintoc,title=Literatur]
 \newpage
