@@ -277,9 +277,9 @@
 \pagenumbering{Roman}
 \setcounter{page}{1}
 \chapter{Einleitung}
-In unserer digitalisierten Welt sind Bilder allgegenwärtig. Durch die Weiterentwicklung von Mobiltelefonen, hat so gut wie jeder eine hochauflösende Kamera in der Hosentasche. Mit dieser steigenden Auflösung, wächst der Bedarf an effizienter Speicherung und Übertragung. Dafür ist es notwendig wirksam und zuverlässig Bilddaten zu komprimieren. Klassische Verfahren wie zum Beispiel JPEG oder PNG nutzen mathematische Transformation, um redundate Informationen zu entfernen und damit den Speicherbedarf signifikant zu reduzieren. Eine besonderst effektives und effizientes mathematisches Verfahren ist dafür die Singulärwertzerlegung (Singular Value Decomposition, SVD). Sie sie hat große Bedeutung für die Bildverarbeitung, aber auch weitreichende Anwendungen in der Signalverarbeitung, Datenanalyse, Statistik und maschinellem Lernen\cite{golub_svd}.
+In unserer digitalisierten Welt sind Bilder allgegenwärtig. Durch die Weiterentwicklung von Mobiltelefonen, hat so gut wie jeder eine hochauflösende Kamera in der Hosentasche. Mit dieser steigenden Auflösung, wächst der Bedarf an effizienter Speicherung und Übertragung. Dafür ist es notwendig wirksam und zuverlässig Bilddaten zu komprimieren. Klassische Verfahren wie zum Beispiel JPEG oder PNG nutzen mathematische Transformation, um redundate Informationen zu entfernen und damit den Speicherbedarf signifikant zu reduzieren. Eine besonderst effektives und effizientes mathematisches Verfahren ist dafür die Singulärwertzerlegung (Singular Value Decomposition, SVD)\cite{hansen1987svd}. Sie sie hat große Bedeutung für die Bildverarbeitung, aber auch weitreichende Anwendungen in der Signalverarbeitung, Datenanalyse, Statistik und maschinellem Lernen\cite{golub_svd}.
 
-Die SVD ist ein zentrales Konzept der linearen Algebra\cite{strang_ocw}. Besonders relevant für Bildkompression ist ihre Eigenschaft, Matrizen optimal durch niedrigere Ränge approximieren zu können. Diese Tatsache, die im sogenannten Eckart-Young-Theorem formalisiert ist und bis heute als Grundlage zahlreicher Kompressionsverfahren dient.
+Die SVD ist ein zentrales Konzept der linearen Algebra\cite{strang_ocw}. Besonders relevant für Bildkompression ist ihre Eigenschaft, Matrizen optimal durch niedrigere Ränge approximieren zu können. Diese Tatsache, die im sogenannten Eckart-Young-Theorem formalisiert ist und bis heute als Grundlage zahlreicher Kompressionsverfahren dient\cite{eckart_young}.
 
 Diese Hausarbeit untersucht die Anwendung der SVD zur Speicherung eines vereinfachten Bildes und zeigt wie, mithilfe der Rang-k-Approximation Speicherplatz reduziert werden kann, ohne die wesentlichen Bildinformationen zu verlieren
 \chapter{Problemstellung}
@@ -323,7 +323,7 @@ Die entscheidende Eigenschaft der SVD für die Bildkompression ist die Möglichk
 \begin{equation}
     A_k = U_k \Sigma_k V_k^{T}
 \end{equation}
-Hierbei werden nur die ersten $k$ Singulärwerte und die zugehörigen Spalten von $U$ und $V$ verwendet. Diese Approximation minimiert den Frobenius-Norm-Fehler zwischen $A$ und $A_k$, was bedeutet, dass $A_k$ die beste mögliche Annäherung an $A$ mit Rang $k$ ist.
+Hierbei werden nur die ersten $k$ Singulärwerte und die zugehörigen Spalten von $U$ und $V$ verwendet. Diese Approximation minimiert den Frobenius-Norm-Fehler zwischen $A$ und $A_k$, was bedeutet, dass $A_k$ die beste mögliche Annäherung an $A$ mit Rang $k$ ist\cite{eckart_young}.
 
 \section{Speicherersparnis durch Rang-k-Approximation}
 Originalmatrix:
@@ -509,6 +509,7 @@ Letztlich werden die rekonstruierten Matrizen als Graustufenbilder visualisiert.
     def plot_matrix(A: np.ndarray, title: str, savepath: str)
 \end{verbatim}
 
+\break
 \section{Zentrale Verarbeitung - \texttt{process\_file()}}
 Die Funktion:
 \begin{verbatim}
@@ -601,6 +602,9 @@ Aus den Messdaten:
 
 \noindent\textbf{Interpretation:} Die deutliche Fehlerreduktion von $k=1$ zu $k=2$ zeigt, dass die zweite Singulärkomponente  einen erheblichen Teil der Bildinformationen wiedergibt. Ab $k=3$ ist der Fehler praktisch null, was auf eine perfekte Rekonstruktion hinweist. Dies deutet darauf hin, dass die Matrix von \texttt{SVD\_F.txt} einen Rang von 3 besitzt. Anderst gesagt bedeutet das, dass die Originalmatrix exakt als Linearkombination von drei äußeren Produkten $\sigma_i u_i v_i^T$ dargestellt werden kann.
 
+
+\subsection{Energieerhaltung}
+
 Aus den Messdaten:
 
  $k = 1:  E(1) \approx 79.08\%$
@@ -617,9 +621,11 @@ Aus den Messdaten:
 \end{figure}
 
 \noindent\textbf{Interpretation:} Der erste Singulärwert trägt bereits fast 80\% der Gesammtenergie, was bei binären Bildern mit stark konzentrierten Informationen typisch ist. Beim zweiten Wert steigt der Energieerhalt auf über 96\%, damit sind die beiden größten Singulärwerte bereits nahezu vollständig. Ab $k=3$ wird die gesamte Energie erfasst, was im Einklang mit der Rang-3-Eigenschaft der Matrix steht.
+Dieses Verhalten ist typisch für strukturierte Bilddaten und wurde bereits frühzeitig für Bildkompression mit SVD genutzt\cite{hansen1987svd}.
 
 \textbf{Folgerung:} Für die vorliegende Matrix ist die Auswahl von $k \geq 3$ äquivalent zur vollständigen Rekonstruktion, während $k=2$ bereits eine gute Näherung bieten.
 
+\break
 \subsection{Speicherbedarf und relative Einsparung}
 Aus den Messdaten:
 
@@ -687,7 +693,7 @@ Die Antwort auf die Frage nach dem optimalen $k$-Wert hängt von den spezifische
 Rekonstruktionen mit $k > 3$ sind in diesem Fall nicht sinnvoll, da sie keinen Qualitätsgewinn bringen und den Speicherbedarf unnötig erhöhen.
 
 \section{Numerische Genauigkeit und Stabilität}
-Die bei $k \geq 3$ beobachteten numerischen Fehler von $4 \times 10^{-15}$ sind auf die begrenzte Genauigkeit der Gleitkommadarstellung in Computern zurückzuführen. Diese Werte sind vernachlässigbar und bestätigen die Stabilität der SVD-Methode für die vorliegende Matrix.
+Die bei $k \geq 3$ beobachteten numerischen Fehler von $4 \times 10^{-15}$ sind auf die begrenzte Genauigkeit der Gleitkommadarstellung in Computern zurückzuführen\cite{trefethen_bau}. Diese Werte sind vernachlässigbar und bestätigen die Stabilität der SVD-Methode für die vorliegende Matrix.
 
 \chapter{Fazit}
 Diese Hausarbeit hat die Singulärwertzerlegung (SVD) als mathematisches Werkzeug zur Daten- und Bildkompression theoretisch hergeleitet, praktisch implementiert und umfassend ausgewertet. Das Ziel war es, den Zusammenhang zwischen Rang-k-Appro-ximation, Rekonstruktionsqualität und Speicherersparnis zu verstehen.
