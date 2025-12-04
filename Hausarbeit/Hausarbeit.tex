@@ -57,6 +57,7 @@
 \usepackage{tabularx}
 \usepackage[labelfont=bf,labelsep=colon,justification=raggedright,singlelinecheck=false]{caption}
 \KOMAoptions{captions=tableheading}
+\usepackage{subcaption}
 \usepackage{array}
 
 % --- Listings (X++) ---------------------------------------------------------
@@ -205,6 +206,9 @@
 
 % Kapitel-/Abschnittsabstände vereinheitlicht
 
+\setkomafont{chapter}{\Large\bfseries}
+\setkomafont{section}{\large\bfseries}
+\setkomafont{subsection}{\normalsize\bfseries}
 
 \RedeclareSectionCommand[
   style=section, 
@@ -588,16 +592,15 @@ Aus den Messdaten:
 
  $k \geq 3:  \| A - A_3 \|_F = 4 \times 10^{-15}$ (numerisch 0)
 
-\begin{figure}
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{error_vs_k.png}
+    \includegraphics[width=0.6\textwidth]{error_vs_k.png}
     \caption{Frobenius-Fehler in Abhängigkeit von k}
     \label{fig:frobenius_error}
 \end{figure}
 
-\textbf{Interpretation:} Die deutliche Fehlerreduktion von $k=1$ zu $k=2$ zeigt, dass die zweite Singulärkomponente  einen erheblichen Teil der Bildinformationen wiedergibt. Ab $k=3$ ist der Fehler praktisch null, was auf eine perfekte Rekonstruktion hinweist. Dies deutet darauf hin, dass die Matrix von \texttt{SVD\_F.txt} einen Rang von 3 besitzt. Anderst gesagt bedeutet das, dass die Originalmatrix exakt als Linearkombination von drei äußeren Produkten $\sigma_i u_i v_i^T$ dargestellt werden kann.
+\noindent\textbf{Interpretation:} Die deutliche Fehlerreduktion von $k=1$ zu $k=2$ zeigt, dass die zweite Singulärkomponente  einen erheblichen Teil der Bildinformationen wiedergibt. Ab $k=3$ ist der Fehler praktisch null, was auf eine perfekte Rekonstruktion hinweist. Dies deutet darauf hin, dass die Matrix von \texttt{SVD\_F.txt} einen Rang von 3 besitzt. Anderst gesagt bedeutet das, dass die Originalmatrix exakt als Linearkombination von drei äußeren Produkten $\sigma_i u_i v_i^T$ dargestellt werden kann.
 
-\subsection{Energieerhalt $E(k)$}
 Aus den Messdaten:
 
  $k = 1:  E(1) \approx 79.08\%$
@@ -606,14 +609,14 @@ Aus den Messdaten:
 
  $k \geq 3:  E(3) = 100.00\%$
 
- \begin{figure}
+\begin{figure}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{energy_vs_k.png}
+    \includegraphics[width=0.6\textwidth]{energy_vs_k.png}
     \caption{Energieerhalt in Abhängigkeit von k}
     \label{fig:energy_retained}
 \end{figure}
 
-\textbf{Interpretation:} Der erste Singulärwert trägt bereits fast 80\% der Gesammtenergie, was bei binären Bildern mit stark konzentrierten Informationen typisch ist. Beim zweiten Wert steigt der Energieerhalt auf über 96\%, damit sind die beiden größten Singulärwerte bereits nahezu vollständig. Ab $k=3$ wird die gesamte Energie erfasst, was im Einklang mit der Rang-3-Eigenschaft der Matrix steht.
+\noindent\textbf{Interpretation:} Der erste Singulärwert trägt bereits fast 80\% der Gesammtenergie, was bei binären Bildern mit stark konzentrierten Informationen typisch ist. Beim zweiten Wert steigt der Energieerhalt auf über 96\%, damit sind die beiden größten Singulärwerte bereits nahezu vollständig. Ab $k=3$ wird die gesamte Energie erfasst, was im Einklang mit der Rang-3-Eigenschaft der Matrix steht.
 
 \textbf{Folgerung:} Für die vorliegende Matrix ist die Auswahl von $k \geq 3$ äquivalent zur vollständigen Rekonstruktion, während $k=2$ bereits eine gute Näherung bieten.
 
@@ -634,17 +637,14 @@ $k = 8:  S(8) = 328, \quad E(8) \approx 12.53\%$
 
 $k = 10: S(10) = 410, \quad E(10) \approx -9.33\%$
 
-  \begin{figure}
-      \centering
-      \includegraphics[width=0.7\textwidth]{savings_vs_k.png}
-      \caption{Relative Speicherersparnis in Abhängigkeit von k}
-      \label{fig:storage_savings}
-  \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{savings_vs_k.png}
+    \caption{Relative Speicherersparnis in Abhängigkeit von k}
+    \label{fig:storage_savings}
+\end{figure}
 
-\textbf{Interpretation:} Die Speicherersparnis ist bei niedrigen $k$-Werten am größten. Bereits bei $k=1$ wird fast 90\% des Speicherplatzes eingespart, während bei $k=2$ immer noch über 78\% Einsparung erzielt werden. Ab $k=3$ sinkt die Einsparung auf etwa 67\%, was immer noch signifikant ist. Mit zunehmendem $k$ verringert sich die Einsparung rapide, und ab $k=10$ übersteigt der Speicherbedarf der SVD-Rekonstruktion den der Originalmatrix.
-
-
-
+\noindent\textbf{Interpretation:} Die Speicherersparnis ist bei niedrigen $k$-Werten am größten. Bereits bei $k=1$ wird fast 90\% des Speicherplatzes eingespart, während bei $k=2$ immer noch über 78\% Einsparung erzielt werden. Ab $k=3$ sinkt die Einsparung auf etwa 67\%, was immer noch signifikant ist. Mit zunehmendem $k$ verringert sich die Einsparung rapide, und ab $k=10$ übersteigt der Speicherbedarf der SVD-Rekonstruktion den der Originalmatrix.
 Daraus lässt sich ableiten das SVD-Kompression nur sind voll ist wenn $S(k) < O$. Daraus ergibt sich eine Höchstgrenze $k_{max}$ für sinnvolle Kompression aus 
 \begin{equation}
     k_{max} < \frac{O}{m + n + 1} = \frac{m \times n}{m + n + 1}
@@ -656,17 +656,51 @@ Für die vorliegende Matrix ($m=15$, $n=25$) ergibt sich:
 Was die Ergebnisse bestätigen, da bei $k=10$ die Einsparung negativ wird.
 
 \section{Bestimmung des optimalen k-Werts}
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}{0.2\textwidth}
+    \includegraphics[width=\linewidth]{original.png}
+    \caption{Original}
+  \end{subfigure}
+  \begin{subfigure}{0.2\textwidth}
+    \includegraphics[width=\linewidth]{reconstruction_k_1.png}
+    \caption{$k=1$}
+  \end{subfigure}
+    \begin{subfigure}{0.2\textwidth}
+        \includegraphics[width=\linewidth]{reconstruction_k_2.png}
+        \caption{$k=2$}
+    \end{subfigure}
+  \begin{subfigure}{0.2\textwidth}
+    \includegraphics[width=\linewidth]{reconstruction_k_3.png}
+    \caption{$k=3$}
+  \end{subfigure}
+  \caption{Originalbild und Rekonstruktionen.}
+  \label{fig:recons}
+\end{figure}
+
 Die Antwort auf die Frage nach dem optimalen $k$-Wert hängt von den spezifischen Anforderungen an Speicherplatz und Rekonstruktionsqualität ab. Basierend auf den vorliegenden Ergebnissen lassen sich folgende Empfehlungen ableiten:
 \begin{itemize}
     \item Für Anwendungen, die eine nahezu perfekte Rekonstruktion erfordern, ist $k=3$ optimal, da hier die Originalmatrix exakt wiederhergestellt wird und dennoch eine Speicherersparnis von über 67\% erzielt wird.
     \item Für Szenarien, in denen Speicherplatz eine kritische Rolle spielt und eine leichte Qualitätsminderung akzeptabel ist, bietet $k=2$ einen hervorragenden Kompromiss mit über 78\% Speicherersparnis und einem Frobenius-Fehler von nur etwa 1.8278.
-    \item $k=1$ kann in sehr speicherbeschränkten Umgebungen verwendet werden, wobei jedoch ein deutlicher Qualitätsverlust in Kauf genommen werden muss.
+    \item $k=1$ kann in sehr speicherbeschränkten Umgebungen verwendet werden, wobei jedoch ein deutlicher Qualitätsverlust in Kauf genommen werden muss und der Informationswert stark eingeschränkt ist.
 \end{itemize}
 Rekonstruktionen mit $k > 3$ sind in diesem Fall nicht sinnvoll, da sie keinen Qualitätsgewinn bringen und den Speicherbedarf unnötig erhöhen.
 
 \section{Numerische Genauigkeit und Stabilität}
 Die bei $k \geq 3$ beobachteten numerischen Fehler von $4 \times 10^{-15}$ sind auf die begrenzte Genauigkeit der Gleitkommadarstellung in Computern zurückzuführen. Diese Werte sind vernachlässigbar und bestätigen die Stabilität der SVD-Methode für die vorliegende Matrix.
-\phantomsection
+
+\chapter{Fazit}
+Diese Hausarbeit hat die Singulärwertzerlegung (SVD) als mathematisches Werkzeug zur Daten- und Bildkompression theoretisch hergeleitet, praktisch implementiert und umfassend ausgewertet. Das Ziel war es, den Zusammenhang zwischen Rang-k-Appro-ximation, Rekonstruktionsqualität und Speicherersparnis zu verstehen.
+
+Die durchgeführten Experimente mit der binären Matrix des Buchstabens „F“ zeigten, dass diese den Rang 3 besitzt. Bereits mit drei Singulärwerten konnte die Originalmatrix exakt rekonstruiert werden. Gleichzeitig wurde trotzdem eine signifikante Speicherersparnis von über 67\% erzielt. Dies bestätigt die Aussage des Eckart-Young-Theorems, dass die SVD die optimale Rang-k-Approximation liefert.
+
+Besonderst hervorzuheben ist die starke Konzentration der Bildinformation in den ersten beiden Singulärwerten. Mit nur zwei Werten konnte bereits über 96\% der Gesamtenergie erfasst werden. Dies unterstreicht die Effektivität der SVD bei der Reduktion von stark strukturierter Daten.
+
+Die Analyse der Speicherersparnis zeigte, dass die SVD-bassierte Speicherung nur dann vorteilhaft ist, wenn der Rang $k$ klein im Verhältnis zu den Matrixdimensionen $m$ und $n$ ist. Für zu große Werte von $k$ übersteigt der Speicherbedarf der SVD-Rekonstruktion sonst sogar den der Originalmatrix. Dies unterstreicht die Notwendigkeit einer sorgfältigen Wahl des Kompressionsgrades basierend auf den spezifischen Anforderungen an Speicherplatz und Rekonstruktionsqualität.
+
+Zusammenfassend konnte gezeigt werden, dass die SVD ein mächtiges Werkzeug für die Bildkompression darstellt. Sie ermöglicht es, je nach Anforderungen, einen optimalen Kompromiss zwischen Speicherersparnis und Bildqualität zu finden. Die verbindung aus solider mathematischer Theorie, effizienter Implementierung und systematischer Auswertung macht die SVD zu einem unverzichtbaren Verfahren in zahlreichen Anwendungsbereichen der Datenverarbeitung.
+
+\break
 \printbibliography[heading=bibintoc,title=Literatur]
 \newpage
 
