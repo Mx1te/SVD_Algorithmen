@@ -6,6 +6,10 @@
 \KOMAoptions{parskip=half}
 \usepackage{helvet}
 \renewcommand{\familydefault}{\sfdefault}
+\usepackage{microtype} % Verbessert Blocksatz
+\hyphenpenalty=5000 % Reduziert Silbentrennung stark
+\exhyphenpenalty=5000 % Reduziert Trennung nach expliziten Bindestrichen
+\tolerance=1000 % Erlaubt etwas mehr Wortabstand statt Trennung
 
 
 
@@ -274,19 +278,19 @@
 \pagenumbering{arabic}
 \setcounter{page}{1}
 \chapter{Einleitung}
-In unserer digitalisierten Welt sind Bilder allgegenwärtig. Durch die Weiterentwicklung von Mobiltelefonen hat so gut wie jeder eine hochauflösende Kamera in der Hosentasche. Mit dieser steigenden Auflösung wächst der Bedarf an effizienter Speicherung und Übertragung. Dafür ist es notwendig, wirksam und zuverlässig Bilddaten zu komprimieren. Klassische Verfahren, wie zum Beispiel JPEG oder PNG, nutzen mathematische Transformation, um redundate Informationen zu entfernen und damit den Speicherbedarf signifikant zu reduzieren. Ein besonders effektives und effizientes mathematisches Verfahren ist dafür die Singulärwertzerlegung (Singular Value Decomposition, SVD) \cite{hansen1987svd}. Sie hat große Bedeutung für die Bildverarbeitung, aber auch weitreichende Anwendungen in der Signalverarbeitung, Datenanalyse, Statistik und maschinellen Lernen \cite{golub_svd}.
+In unserer digitalisierten Welt sind Bilder allgegenwärtig. Durch die Weiterentwicklung von Mobiltelefonen hat so gut wie jeder eine hochauflösende Kamera in der Hosentasche. Mit dieser steigenden Auflösung wächst der Bedarf an effizienter Speicherung und Übertragung. Dafür ist es notwendig, wirksam und zuverlässig Bilddaten zu komprimieren. Klassische Verfahren, wie zum Beispiel JPEG oder PNG, nutzen mathematische Transformation, um redundante Informationen zu entfernen und damit den Speicherbedarf signifikant zu reduzieren. Ein besonders effektives und effizientes mathematisches Verfahren ist dafür die Singulärwertzerlegung (Singular Value Decomposition, SVD) \cite{hansen1987svd}. Sie hat große Bedeutung für die Bildverarbeitung, aber auch weitreichende Anwendungen in der Signalverarbeitung, Datenanalyse, Statistik und maschinellen Lernen \cite{golub_svd}.
 
-Die SVD ist ein zentrales Konzept der linearen Algebra \cite{strang_ocw}. Besonders relevant für Bildkompression ist ihre Eigenschaft, Matrizen optimal durch niedrigere Ränge approximieren zu können. Diese Tatsache, ist im sogenannten Eckart-Young-Theorem formalisiert und dient bis heute als Grundlage zahlreicher Kompressionsverfahren \cite{eckart_young}.
+Die SVD ist ein zentrales Konzept der linearen Algebra \cite{strang_ocw}. Besonders relevant für Bildkompression ist ihre Eigenschaft, Matrizen optimal durch niedrigere Ränge approximieren zu können. Diese Tatsache ist im sogenannten Eckart-Young-Theorem formalisiert und dient bis heute als Grundlage zahlreicher Kompressionsverfahren \cite{eckart_young}.
 
-Diese Hausarbeit untersucht die Anwendung der SVD zur Speicherung eines vereinfachten Bildes und zeigt wie, mithilfe der Rang-k-Approximation Speicherplatz reduziert werden kann, ohne die wesentlichen Bildinformationen zu verlieren.
+Diese Hausarbeit untersucht die Anwendung der SVD zur Speicherung eines vereinfachten Bildes und zeigt, wie mithilfe der Rang-k-Approximation Speicherplatz reduziert werden kann, ohne die wesentlichen Bildinformationen zu verlieren.
 \chapter{Problemstellung}
-Hochauflösende digitale Bilder bestehen aus einer großen Anzahl von Pixeln, die üblicherweise als eine zweidimensionalen Matrix gespeichert werden. Dementsprechend wächst der Speicherbedarf eines unkomprimierten Bildes proportional zur Anzahl der Pixel. Bei einer Größe von 15x25 enthält die Matrix bereits 375 einzelne Werte, während ein Bild im HD-Format bereits über zwei Millionen Pixel umfasst. 
+Hochauflösende digitale Bilder bestehen aus einer großen Anzahl von Pixeln, die üblicherweise als eine zweidimensionale Matrix gespeichert werden. Dementsprechend wächst der Speicherbedarf eines unkomprimierten Bildes proportional zur Anzahl der Pixel. Bei einer Größe von 15x25 enthält die Matrix bereits 375 einzelne Werte, während ein Bild im HD-Format bereits über zwei Millionen Pixel umfasst. 
 
 Die zugrunde liegende Aufgabe dieser Arbeit besteht darin,
 \begin{enumerate}
     \item die Matrixdarstellung des Buchstabens „F“ aus einer Textdatei einzulesen,
     \item die vollständige SVD dieser Matrix zu berechnen,
-    \item die sukzessive Rang-k-Approximationen zu erzeugen und zu analysieren,
+    \item die sukzessiven Rang-k-Approximationen zu erzeugen und zu analysieren,
     \item die Veränderung der Bildqualität bei zunehmendem k zu untersuchen, und
     \item die erzielten Speicherersparnisse gegenüber der Originalmatrix zu bestimmen.
 \end{enumerate}
@@ -299,7 +303,7 @@ Ein Graustufenbild lässt sich mathematisch als Matrix
 \[
   A \in \mathbb{R}^{m \times n}
 \]
-darstellen. Jeder Eintrag $a_{ij}$ stellt dabei den Helligkeitswert eines Pixels dar. Binäre Bilder, wie das in dieser Hausarbeit benutzte „F", enthalten nur die Werte 0 und 1. Sie eignen sich trotzdem hervorragend zu Untersuchung von Strukturzerlegung, da sie klare Kanten und Zusammenhänge besitzen.
+darstellen. Jeder Eintrag $a_{ij}$ stellt dabei den Helligkeitswert eines Pixels dar. Binäre Bilder, wie das in dieser Hausarbeit benutzte „F", enthalten nur die Werte 0 und 1. Sie eignen sich trotzdem hervorragend zur Untersuchung von Strukturzerlegung, da sie klare Kanten und Zusammenhänge besitzen.
 
 \section{Definition der Singulärwertzerlegung}
 Die SVD zerlegt eine Matrix $A$ in drei Komponenten:
@@ -313,14 +317,14 @@ Dabei gelten folgende Eigenschaften:
     \item $V \in \mathbb{R}^{n \times n}$ enthält die orthogonalen Basisvektoren der Spaltenstruktur.
 \end{itemize}
 
-Jeder Singulärwert $\sigma_i$ in $\Sigma$ gibt die Bedeutung des zugehörigen Basisvektors an. Größere Werte deuten auf wichtigere Strukturen hin, während kleinere Werte oft Rauschen oder weniger relevante Details repräsentieren.
+Jeder Singulärwert $\sigma_i$ in $\Sigma$ gibt die Bedeutung des zugehörigen Basisvektors an. Größere Werte deuten auf wichtigere Strukturen hin, während kleinere Werte oft Rauschen beziehungsweise weniger relevante Details repräsentieren.
 
 \section{Rang-k-Approximation}
 Die entscheidende Eigenschaft der SVD für die Bildkompression ist die Möglichkeit, eine Matrix $A$ durch eine Rang-k-Approximation $A_k$ zu nähern:
 \[
   A_k = U_k \Sigma_k V_k^{T}
 \]
-Hierbei werden nur die ersten $k$ Singulärwerte und die zugehörigen Spalten von $U$ und $V$ verwendet. Diese Approximation minimiert den Frobenius-Norm-Fehler zwischen $A$ und $A_k$, was bedeutet, dass $A_k$ die beste mögliche Annäherung an $A$ mit Rang $k$ ist \cite{eckart_young}.
+Hierbei werden nur die ersten $k$ Singulärwerte und die zugehörigen Spalten von $U$ und $V$ verwendet. Diese Approximation minimiert den Frobenius-Norm-Fehler zwischen $A$ und $A_k$, was bedeutet, dass $A_k$ die bestmögliche Annäherung an $A$ mit Rang $k$ ist \cite{eckart_young}.
 
 \section{Speicherersparnis durch Rang-k-Approximation}
 Originalmatrix:
@@ -332,7 +336,7 @@ Die Speicherersparnis ergibt sich aus der Reduktion der benötigten Elemente zur
 \[
   S(k) = k(m + n + 1)
 \]
-Dies führt zu einer erheblichen Reduktion des Speicherbedarfs, insbesondere wenn $k$ deutlich kleiner ist als sowohl $m$ als auch $n$.
+Dies führt zu einer erheblichen Reduktion des Speicherbedarfs, insbesondere wenn $k$ deutlich kleiner ist als $m$ und $n$.
 
 Relative Speicherersparnis:
 \[
@@ -340,7 +344,7 @@ Relative Speicherersparnis:
 \]
 
 \chapter{Programmbeschreibung und Auswertung}
-In diesem Kapitel wird das entwickelte Python-Programm \texttt{svd\_image\_compression.py} detailliert beschrieben. Das Programm dient der praktischen Umsetzung der Singulärwertzerlegung zur Bildkompression. Es ermöglicht das Einlesen einer Bildmatrix und die Berechnung der reduzierten SVD, Des Weiteren erzeugt es die Rekonstruktionen für verschiedene Rangwerte, die grafische Darstellung der Ergebnisse Letztlich erfolgt die Berechnung von Fehlermaßen, sowie Energieerhaltung und der Speicherersparnis. Zusätzlich wird eine übersichtliche CSV-Datei zur Dokumentation der Ergebnisse erzeugt.
+In diesem Kapitel wird das entwickelte Python-Programm \texttt{svd\_image\_compression.py} detailliert beschrieben. Das Programm dient der praktischen Umsetzung der Singulärwertzerlegung zur Bildkompression. Es ermöglicht das Einlesen einer Bildmatrix und die Berechnung der reduzierten SVD. Des Weiteren erzeugt es die Rekonstruktionen für verschiedene Rangwerte, die grafische Darstellung der Ergebnisse. Letztlich erfolgt die Berechnung von Fehlermaßen, sowie Energieerhaltung und der Speicherersparnis. Zusätzlich wird eine übersichtliche CSV-Datei zur Dokumentation der Ergebnisse erzeugt.
 
 \section{Lösungsansatz und Wahl der Programmiersprache}
 Zur praktischen Umsetzung wird Python in Verbindung mit der Bibliothek NumPy und Matplotlib verwendet. NumPy stellt eine hocheffiziente Implementierung der SVD bereit, die intern auf der LAPACK-Bibliothek basiert und Mathplotlib ermöglicht die anschauliche Visualisierung der Ergebnisse.
@@ -380,7 +384,7 @@ Die Matrix wird aus einer Textdatei eingelesen:
 \begin{verbatim}
     A = np.loadtxt(path)
 \end{verbatim}
-Die Datei \texttt{SVD\_F.txt} enthält die binäre Matrix des Buchstabens „F“. Jeder Eintrag entspricht einem Pixelwert (0 oder 1). Nach dem Einlesen wird die Matrix in ein NumPy-Array vom Typ \texttt{float} umgewandelt, das für die weitere Verarbeitung verwendet wird.
+Die Datei \texttt{SVD\_F.txt} enthält die binäre Matrix des Buchstabens „F“. Jeder Eintrag entspricht einem Pixelwert (0 oder 1). Nach dem Einlesen wird die Matrix in ein NumPy-Array vom Typ \texttt{float} umgewandelt, welches für die weitere Verarbeitung verwendet wird.
 
 \section{Berechnung der Singulärwertzerlegung}
 Die Funktion:
@@ -646,7 +650,7 @@ $k = 10: S(10) = 410, \quad E(10) \approx -9.33\%$
     \label{fig:storage_savings}
 \end{figure}
 
-\noindent\textbf{Interpretation:} Die Speicherersparnis ist bei niedrigen $k$-Werten am größten. Bereits bei $k=1$ wird fast 90\% des Speicherplatzes eingespart, während bei $k=2$ immer noch über 78\% Einsparung erzielt werden. Ab $k=3$ sinkt die Einsparung auf etwa 67\%, was immer noch signifikant ist. Mit zunehmendem $k$ verringert sich die Einsparung rapide, und ab $k=10$ übersteigt der Speicherbedarf der SVD-Rekonstruktion den der Originalmatrix.
+\noindent\textbf{Interpretation:} Die Speicherersparnis ist bei niedrigen $k$-Werten am größten. Bereits bei $k=1$ werden fast 90\% des Speicherplatzes eingespart, während bei $k=2$ immer noch über 78\% Einsparung erzielt werden. Ab $k=3$ sinkt die Einsparung auf etwa 67\%, was immer noch signifikant ist. Mit zunehmendem $k$ verringert sich die Einsparung rapide, und ab $k=10$ übersteigt der Speicherbedarf der SVD-Rekonstruktion den der Originalmatrix.
 Daraus lässt sich ableiten, dass SVD-Kompression nur sinnvoll ist, wenn $S(k) < O$. Daraus ergibt sich eine Höchstgrenze $k_{max}$ für sinnvolle Kompression aus:
 
 \[
@@ -681,7 +685,7 @@ Dies wird von den Ergebnissen bestätigt, da bei $k=10$ die Einsparung negativ w
     \includegraphics[width=\linewidth]{reconstruction_k_5.png}
     \caption{$k=5$}
   \end{subfigure}
-  \caption{Originalbild und Rekonstruktionen.}
+  \caption{Originalbild und Rekonstruktionen}
   \label{fig:recons}
 \end{figure}
 
@@ -701,9 +705,9 @@ Diese Hausarbeit hat die Singulärwertzerlegung (SVD) als mathematisches Werkzeu
 
 Die durchgeführten Experimente mit der binären Matrix des Buchstabens „F“ zeigten, dass diese den Rang 3 besitzt. Bereits mit drei Singulärwerten konnte die Originalmatrix exakt rekonstruiert werden. Gleichzeitig wurde trotzdem eine signifikante Speicherersparnis von über 67\% erzielt. Die Analyse der Frobenius-Norm des Rekonstruktionsfehlers bestätigte die hohe Qualität der Approximationen, insbesondere für $k=2$ und $k=3$.
 
-Besonderst hervorzuheben ist die starke Konzentration der Bildinformation in den ersten beiden Singulärwerten. Mit nur zwei Werten konnte bereits über 96\% der Gesamtenergie erfasst werden. Dies unterstreicht die Effektivität der SVD bei der Reduktion von stark strukturierter Daten.
+Besonders hervorzuheben ist die starke Konzentration der Bildinformation in den ersten beiden Singulärwerten. Mit nur zwei Werten konnte bereits über 96\% der Gesamtenergie erfasst werden. Dies unterstreicht die Effektivität der SVD bei der Reduktion von stark strukturierter Daten.
 
-Die Analyse der Speicherersparnis zeigte, dass die SVD-basierte Speicherung nur dann vorteilhaft ist, wenn der Rang $k$ klein im Verhältnis zu den Matrixdimensionen $m$ und $n$ ist. Für zu große Werte von $k$ übersteigt der Speicherbedarf der SVD-Rekon-struktion sonst sogar den der Originalmatrix. Dies unterstreicht die Notwendigkeit einer sorgfältigen Wahl des Kompressionsgrades basierend auf den spezifischen Anforderungen an Speicherplatz und Rekonstruktionsqualität.
+Die Analyse der Speicherersparnis zeigte, dass die SVD-basierte Speicherung nur dann vorteilhaft ist, wenn der Rang $k$ klein im Verhältnis zu den Matrixdimensionen $m$ und $n$ ist. Für zu große Werte von $k$ übersteigt der Speicherbedarf der SVD-Rekonstruktion sonst den der Originalmatrix. Dies unterstreicht die Notwendigkeit einer sorgfältigen Wahl des Kompressionsgrades basierend auf den spezifischen Anforderungen an Speicherplatz und Rekonstruktionsqualität.
 
 Zusammenfassend konnte gezeigt werden, dass die SVD ein mächtiges Werkzeug für die Bildkompression darstellt. Sie ermöglicht es, je nach Anforderungen, einen optimalen Kompromiss zwischen Speicherersparnis und Bildqualität zu finden. Die verbindung aus solider mathematischer Theorie, effizienter Implementierung und systematischer Auswertung macht die SVD zu einem unverzichtbaren Verfahren in zahlreichen Anwendungsbereichen der Datenverarbeitung.
 
@@ -747,7 +751,7 @@ Zusammenfassend konnte gezeigt werden, dass die SVD ein mächtiges Werkzeug für
 \phantomsection\addchap{Anhang}
 
 \phantomsection\addsec{Selbstständigkeitserklärung}
-Ich versichere, dass ich die vorliegende Hausarbeit ohne fremde Hilfe selbständig verfasst und nur die angegebenen Quellen und Hilfsmittel benutzt habe. Wörtlich oder dem Sinn nach aus anderen Werken entnommene Stellen sind unter Angabe der Quellen kenntlich gemacht. Bestandteile der Arbeit, die mittels Künstlicher Intelligenz entstanden sind, wurden ausdrücklich gekennzeichnet. Die Arbeit wurde bisher in gleicher oder ähnlicher Form weder veröffentlicht noch einer anderen Prüfungsbehörde vorgelegt.\\[2em]
+Ich versichere, dass ich die vorliegende Hausarbeit ohne fremde Hilfe selbstständig verfasst und nur die angegebenen Quellen und Hilfsmittel benutzt habe. Wörtlich oder dem Sinn nach aus anderen Werken entnommene Stellen sind unter Angabe der Quellen kenntlich gemacht. Bestandteile der Arbeit, die mittels künstlicher Intelligenz entstanden sind, wurden ausdrücklich gekennzeichnet. Die Arbeit wurde bisher in gleicher oder ähnlicher Form weder veröffentlicht noch einer anderen Prüfungsbehörde vorgelegt.\\[2em]
 Bitterfeld, 23. Dezember 2025 \hfill\rule{5cm}{0.4pt}
 \noindent\makebox[\linewidth][r]{Malte Luca Peukert}\par
 
